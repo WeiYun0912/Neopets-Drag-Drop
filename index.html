@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        user-select: none;
+      }
+      .container-show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        flex-direction: row;
+      }
+      .container::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 200%;
+        background: url(bk.jpg);
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-attachment: fixed;
+        /* filter: blur(1.5px); */
+        opacity: 0.7;
+        z-index: -1;
+      }
+      .item-container {
+        width: 100%;
+        /* margin-top: 30px; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex-basis: 50%;
+      }
+      .item {
+        padding: 1rem;
+        margin-left: 30px;
+        text-align: center;
+        border: 2px solid #fff;
+        margin-top: 10px;
+        color: #fff;
+      }
+
+      .item-content {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      img:hover {
+        cursor: pointer;
+      }
+
+      .cart {
+        width: 300px;
+        height: 550px;
+        border: 2px solid #fff;
+        position: fixed;
+        top: 0px;
+        padding: 1rem;
+      }
+
+      .cart img {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cart"></div>
+    <div class="show" style="text-align: center; font-size: 26px; color: #fff;">
+      <p id="mousePirce">MouseOver Price：</p>
+      <p id="showPrice">Clcik Price:</p>
+    </div>
+    <div class="container-show"></div>
+    <div class="container">
+      <div class="item-container"></div>
+    </div>
+
+    <script>
+      const itemContainer = document.querySelector(".item-container");
+      const itemContainerShow = document.querySelector(".container-show");
+      const cart = document.querySelector(".cart");
+
+      var html = "";
+      const testPromise = () => {
+        return new Promise((reslove, reject) => {
+          for (let i = 1; i <= 24; i++) {
+            let random = Math.floor(Math.random() * 500);
+            html += `
+                <div class="item">
+                    <div class="item-header">
+                        <img draggable="true" data-price=${random} src="img/${i}.gif" alt="" />
+                    </div>
+                    <div class="item-content">
+                        <p class="price">NeoP:$${random}</p>
+                        <p>NeoName:Apple</p>
+                    </div>
+                </div>
+            `;
+          }
+          reslove(html);
+        });
+      };
+
+      testPromise()
+        .then((html) => {
+          itemContainer.innerHTML = html;
+          return document.querySelectorAll("img");
+        })
+        .then((img) => {
+          for (const i of img) {
+            i.addEventListener("dragstart", dragStart);
+          }
+        });
+      cart.addEventListener("dragover", dragOver);
+      cart.addEventListener("drop", Drop);
+
+      function dragStart(e) {
+        console.log(e.target.src);
+        e.dataTransfer.setData("text/plain", e.target.src);
+      }
+
+      function dragOver(e) {
+        e.preventDefault();
+      }
+
+      function Drop(e) {
+        cart.innerHTML += `<img src=${e.dataTransfer.getData("text/plain")}>`;
+      }
+    </script>
+  </body>
+</html>
